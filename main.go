@@ -14,6 +14,7 @@ import (
 func main() {
 	router := mux.NewRouter()
 
+	//api路由
 	/* router.HandleFunc("/api/user/create", controllers.CreateAccount).Methods("POST")
 	 router.HandleFunc("/api/user/login", controllers.Authenticate).Methods("POST")
 	router.HandleFunc("/api/chat/listGet", controllers.GetContactsFor).Methods("POST")
@@ -21,6 +22,7 @@ func main() {
 	router.HandleFunc("/api/chat/create", controllers.GetContactsFor).Methods("POST")  */
 	//router.Use(application.JwtAuthentication)
 
+	//設定PORT號
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
