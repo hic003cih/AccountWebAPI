@@ -39,9 +39,11 @@ func init() {
 	//將連結存到var db變數
 	db = conn
 
-	db.Debug().AutoMigrate(&Account{}, &Contact{})
+	//db.Debug().AutoMigrate(&Account{}, &Contact{})
+	db.Debug().AutoMigrate(&Account{})
 }
 
+//建立一個GetDB()讓其他package可以直接使用,取得DB
 func GetDB() *gorm.DB {
 	return db
 }
