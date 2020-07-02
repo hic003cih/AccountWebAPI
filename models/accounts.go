@@ -1,3 +1,4 @@
+//主要的邏輯放置在這
 package models
 
 import (
@@ -78,4 +79,31 @@ func (account *Account) Create() map[string]interface{} {
 	response := u.Message(true, "Account has been created")
 	response["account"] = account
 	return response
+}
+//登入
+func Login(email, password string) map[string]interface{} {
+	account := &Account{}
+	//帳號驗證
+	err := GetDB().Table("accounts").Where("email = ?", email).First(account).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return u.Message(false, "Email address not found")
+		}
+		return u.Message(false, "Connection error")
+	}
+	//密碼驗證
+	err = bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(password))
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
+		return u.Message(false, "Invalid login credentials")
+	}
+	account.Password = ""
+
+	tk :=&Token(UserId:account.ID)
+	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
+	tokenString, _ := token.SignedString([]byte(os.Getenv("token_password")))
+	account.Token = tokenString
+
+	resp:=u.Message(true, "Logged In")
+	resp["account"] = account
+	return resp
 }
