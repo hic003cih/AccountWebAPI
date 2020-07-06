@@ -91,3 +91,15 @@ func (chatlist *ChatList) Validate() (map[string]interface{}, bool) {
 	}
 	return u.Message(false, "Requirement passed"), true
 }
+
+//傳入 chatName 來找尋該圖表的 x、y 資料
+func GatChatData(chatName string) *ChatData {
+	ChatData := &ChatData{}
+	//取得圖表名稱為 chatName 的資料
+	err := GetDB().Table("chatdata").Where("ChatName = ?", chatName).First(ChatData).Error
+	if err != nil {
+		return nil
+	}
+	//回傳
+	return ChatData
+}

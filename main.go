@@ -27,8 +27,11 @@ func main() {
 	//router.HandleFunc("/api/chat/createData", controllers.CreateChatData).Methods("POST")
 
 	//讀取圖表 api
-	router.HandleFunc("/api/chat/getList", controllers.GetChatList).Methods("POST")
-	router.HandleFunc("/api/chat/getData", controllers.GetChatData).Methods("POST")
+	//router.HandleFunc("/api/chat/getList", controllers.GetChatList).Methods("POST")
+	//router.HandleFunc("/api/chat/getData", controllers.GetChatData).Methods("POST")
+
+	//測試用API
+	router.HandleFunc("/api/test/test", controllers.Test).Methods("POST")
 	//設定PORT號
 	port := os.Getenv("PORT")
 	if port == "" {
