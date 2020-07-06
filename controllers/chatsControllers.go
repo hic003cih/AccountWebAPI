@@ -65,3 +65,18 @@ var CreateChatDatta = func(w http.ResponseWriter, r *http.Request) {
 	resp := ChatData.CreateChatData()
 	u.Respond(w, resp)
 }
+
+//讀取圖表
+var GetChatList = func(w http.ResponseWriter, r *http.Request) {
+
+	ChatList := &models.ChatList{}
+	err := json.NewDecoder(r.Body).Decode(ChatList)
+	//如果輸入的請求錯誤
+	if err != nil {
+		u.Respond(w, u.Message(false, "Invalid request"))
+		return
+	}
+
+	resp := ChatList.GetChatData()
+	u.Respond(w, resp)
+}

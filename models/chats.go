@@ -75,3 +75,19 @@ func (chatdata *ChatData) CreateChatData() map[string]interface{} {
 	resp["chatdata"] = chatdata
 	return resp
 }
+
+//驗證傳入訊息
+func (chatlist *ChatList) Validate() (map[string]interface{}, bool) {
+	//認證圖表是否存在
+	temp := &ChatList{}
+
+	err := GetDB().Table("chatlist").Where("chatname = ?", chatlist.ChatName).First(temp).Error
+
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return u.Message(false, "Connection error"), false
+	}
+	if temp.ChatName != "" {
+		return u.Message(false, "chat has been used"), false
+	}
+	return u.Message(false, "Requirement passed"), true
+}

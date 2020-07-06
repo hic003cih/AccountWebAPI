@@ -26,6 +26,9 @@ func main() {
 	//router.HandleFunc("/api/chat/createList", controllers.CreateChatInfo).Methods("POST")
 	//router.HandleFunc("/api/chat/createData", controllers.CreateChatData).Methods("POST")
 
+	//讀取圖表 api
+	router.HandleFunc("/api/chat/getList", controllers.GetChatList).Methods("POST")
+	router.HandleFunc("/api/chat/getData", controllers.GetChatData).Methods("POST")
 	//設定PORT號
 	port := os.Getenv("PORT")
 	if port == "" {
