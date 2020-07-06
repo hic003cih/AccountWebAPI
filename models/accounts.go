@@ -97,7 +97,7 @@ func Login(email, password string) map[string]interface{} {
 		return u.Message(false, "Invalid login credentials")
 	}
 	account.Password = ""
-
+	//創建 token
 	tk :=&Token(UserId:account.ID)
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
 	tokenString, _ := token.SignedString([]byte(os.Getenv("token_password")))

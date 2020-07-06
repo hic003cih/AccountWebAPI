@@ -22,6 +22,10 @@ func main() {
 	router.HandleFunc("/api/chat/create", controllers.GetContactsFor).Methods("POST")  */
 	//router.Use(application.JwtAuthentication)
 
+	//圖表 api
+	//router.HandleFunc("/api/chat/createList", controllers.CreateChatInfo).Methods("POST")
+	//router.HandleFunc("/api/chat/createData", controllers.CreateChatData).Methods("POST")
+
 	//設定PORT號
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -29,6 +33,7 @@ func main() {
 	}
 
 	fmt.Println(port)
+	//
 	err := http.ListenAndServe(":"+port, router)
 	if err != nil {
 		fmt.Print(err)
