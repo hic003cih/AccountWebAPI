@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"accountWebAPI/models"
+	u "accountWebAPI/utils"
 	"encoding/json"
-	"golang-api/models"
-	u "golang-api/utils"
 	"net/http"
 )
 

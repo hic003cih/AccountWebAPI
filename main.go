@@ -5,8 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	/* "golang-api/application"
-	"golang-api/controllers" */
+	"accountWebAPI/controllers"
 
 	"github.com/gorilla/mux"
 )
@@ -32,6 +31,11 @@ func main() {
 
 	//測試用API
 	router.HandleFunc("/api/test/test", controllers.Test).Methods("POST")
+
+	//修改密碼 api
+	router.HandleFunc("/api/user/editor", controllers.EditorAccount).Methods("POST")
+	//刪除帳號 api
+	router.HandleFunc("/api/user/delete", controllers.DeleteAccount).Methods("POST")
 	//設定PORT號
 	port := os.Getenv("PORT")
 	if port == "" {

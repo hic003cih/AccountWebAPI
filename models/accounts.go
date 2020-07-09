@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,7 +16,6 @@ type Token struct {
 	UserId uint
 	jwt.StandardClaims
 }
-
 //帳號結構
 type Account struct {
 	gorm.Model
@@ -67,10 +66,13 @@ func (account *Account) Create() map[string]interface{} {
 		return u.Message(false, "Failed to create account, connection error.")
 	}
 
-	//產生 jwt
+	////準備聲明內容
 	tk := &Token{UserId: account.ID}
+	//宣告使用 HS256 與加入Payload 的聲明內容
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
+	//將 token_pwd 設定為 secret 並產生 jwt
 	tokenString, _ := token.SignedString([]byte(os.Getenv("token_password")))
+	//將產生好的 jwt 值給予 account.Token
 	account.Token = tokenString
 
 	account.Password = ""
@@ -107,3 +109,80 @@ func Login(email, password string) map[string]interface{} {
 	resp["account"] = account
 	return resp
 }
+func parseToken(token string) (*jwt.StandardClaims, error) { 
+    jwtToken, err := jwt.ParseWithClaims(token, &jwt.StandardClaims{}, func(token *jwt.Token) (i interface{}, e error) {
+         return []byte(config.Secret), nil 
+         }) 
+    if err == nil && jwtToken != nil { 
+     if claim, ok := jwtToken.Claims.(*jwt.StandardClaims); ok && jwtToken.Valid { return claim, nil } 
+    } 
+    return nil, err 
+}
+
+//密碼修改
+func Editor(email, oldPassword, newPassword string) (map[string]interface{}) {
+
+	//如果密碼小於8位數，回傳帳號格式錯誤
+	  if len(oldPassword) < 8 && len(newPassword) < 8 {
+		  return u.Message(false, "Password format error"), false
+	  }
+  
+	//帳號驗證
+	  err := GetDB().Table("accounts").Where("email = ?", email).First(account).Error
+	  if err != nil {
+		  if err == gorm.ErrRecordNotFound {
+			  return u.Message(false, "Email address not found")
+		  }
+		  return u.Message(false, "Connection error")
+	  }
+	
+	//舊密碼驗證
+	  err = bcrypt.CompareHashAndPassword([]byte(oldPassword), []byte(password))
+	  if err != nil && err == bcrypt.ErrMismatchedHashAndPassword { 
+		  return u.Message(false, "pwd error")
+	  }  
+	
+	  hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	  account.Password = string(hashedPassword)  	
+	
+	//保存
+	GetDB().Save(account)
+  
+	//清空 pwd 的數值以便回傳
+	account.Password = ""
+	
+	//修改完成
+	  response := u.Message(true, "Account has been editor")
+	  response["account"] = account
+	  return response
+  }
+  //帳號刪除
+  //包含驗證輸入的密碼是否正確
+func (account *Account) Editor() (map[string]interface{}) {  
+
+	account := &Account{}
+	
+	err := GetDB().Table("accounts").Where("email = ?", email).First(account).Error
+	  if err != nil {
+		  if err == gorm.ErrRecordNotFound {
+			  return u.Message(false, "Email address not found")
+		  }
+		  return u.Message(false, "Connection error. Please retry")
+	  }
+  
+	  err = bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(password))
+	  if err != nil && err == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
+		  return u.Message(false, "pwd error")
+	  }
+	
+	//刪除
+	GetDB().Delete(Account{}, "email = ?", email)
+  
+	//清空 pwd 的數值以便回傳
+	account.Password = ""
+	
+	//刪除完成
+	  response := u.Message(true, "Account has been delete")
+	  response["account"] = account
+	  return response
+  }

@@ -1,8 +1,7 @@
 package models
 
 import (
-	u "golang-api/utils"
-	"os"
+	u "accountWebAPI/utils"
 	"time"
 )
 

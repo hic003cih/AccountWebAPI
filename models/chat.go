@@ -1,7 +1,7 @@
 package models
 
 import (
-	u "golang-api/utils"
+	u "accountWebAPI/utils"
 
 	"github.com/jinzhu/gorm"
 )
